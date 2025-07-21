@@ -1,0 +1,12 @@
+streamlit
+numpy==2.0.2
+pandas==2.2.2
+joblib==1.5.1
+openpyxl==3.1.5       
+scikit-learn==1.6.1
+lightgbm
+xgboost==2.1.4
+catboost==1.2.8
+tqdm==4.67.1
+tqdm_joblib==0.0.4
+cloudpickle
