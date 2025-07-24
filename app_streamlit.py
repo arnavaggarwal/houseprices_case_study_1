@@ -14,7 +14,6 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import TimeSeriesSplit, cross_validate, KFold
 from sklearn.ensemble import StackingRegressor, HistGradientBoostingRegressor
 from sklearn.linear_model import Ridge
-
 import warnings
 warnings.filterwarnings("ignore", category=FutureWarning)
 
@@ -38,21 +37,22 @@ class FeatureTransformer(BaseEstimator, TransformerMixin):
         return X.drop(columns=['Date Sold'])
 
 
-@st.cache(allow_output_mutation=True)
+@st.cache_resource
 def load_model():
-    with open("stacking_model_cpkl.pkl", "rb") as f:
+    with open("stacking_model.pkl", "rb") as f:
         return cloudpickle.load(f)
 
-@st.cache
+@st.cache_data
 def load_data():
     # adjust path if needed
-    df = pd.read_excel("Case Study 1 Data.xlsx")
+    df = pd.read_excel("input_parameters.xlsx")
     # drop unused cols
-    df = df.drop(columns=["Property ID", "Price"]).dropna(subset=["Location"])
+    # df = df.drop(columns=["Property ID", "Price"]).dropna(subset=["Location"])
     return df
 
 model = load_model()
 df = load_data()
+
 
 st.title("🏠 House Price Predictor")
 
@@ -98,6 +98,6 @@ st.write(input_df)
 if st.sidebar.button("Predict Price"):
     pred = model.predict(input_df)[0]
     st.subheader("🔮 Predicted Price")
-    st.success(f"₹ {pred:,.0f}")
+    st.success(f"{pred:,.0f}")
 else:
     st.write("Adjust the inputs and click **Predict Price** in the sidebar.")

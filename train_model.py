@@ -1,5 +1,4 @@
 # train_model.py
-# final: stacking GBMs with HGB, Ridge meta, CV metrics, and GPU support
 
 import os
 import warnings
@@ -39,6 +38,7 @@ def detect_gpu():
         return False
 
 USE_GPU = detect_gpu()
+USE_GPU = False # Force CPU for compatibility and model inference using CPU
 print(f"GPU detected: {USE_GPU}")
 
 # Feature transformer: date parsing + fixed ratio features
@@ -69,6 +69,7 @@ def main():
     # Remove outliers
     df['price_z'] = zscore(df['Price'])
     df = df[df['price_z'].abs() <= 3].drop(columns=['price_z'])
+    # split features and target
     X = df.drop(columns=['Price'])
     y = df['Price']
 
@@ -102,10 +103,10 @@ def main():
     xgb_params = {
         'random_state': 42,
         'use_label_encoder': False,
-        'eval_metric': 'rmse',
         'n_jobs': -1,
         'n_estimators': 200,
-        'tree_method': 'gpu_hist' if USE_GPU else 'hist',
+        'device': 'cuda' if USE_GPU else 'cpu',
+        'tree_method': 'hist',
         'eval_metric': 'mape'
     }
     cat_params = {
@@ -138,17 +139,6 @@ def main():
         passthrough=True
     )
 
-    # # Pipeline with log-transform
-    # pipeline = Pipeline([
-    #     ('feat', FeatureTransformer()),
-    #     ('prep', preprocessor),
-    #     ('stack', stack)
-    # ])
-    # model = TransformedTargetRegressor(
-    #     regressor=pipeline,
-    #     func=np.log1p,
-    #     inverse_func=np.expm1
-    # )
 
     # Pipeline (no log‑transform)
     model = Pipeline([
@@ -171,11 +161,10 @@ def main():
     print(f" MAPE: {cv_res['test_MAPE'].mean()*100:.2f}%")
 
     # Final fit & save
-    # fit_steps = len(estimators) + 1
     model.fit(X, y)
-    with open("stacking_model_cpkl.pkl", "wb") as f:
+    with open("stacking_model.pkl", "wb") as f:
         cloudpickle.dump(model, f)
-    print("Model serialized to stacking_model_cpkl.pkl with cloudpickle")
+    print("Model serialized to stacking_model.pkl with cloudpickle")
     # joblib.dump(model, "stacking_model_final.pkl", compress=3)
     # print("Model trained and saved to stacking_model.pkl")
 
