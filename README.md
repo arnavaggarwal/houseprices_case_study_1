@@ -1,16 +1,16 @@
 # Property Recommender
 
-This repository provides an end-to-end property recommendation system powered by machine learning and agentic AI. It includes training scripts, a FastAPI backend, and a Streamlit frontend.
+This repository provides an end-to-end property recommendation system powered by machine learning and agentic AI. It includes training scripts, a FastAPI backend, and a Streamlit frontend. Link : https://housepricescasestudy1-vfdre3x7vwf64ftzhbrdjs.streamlit.app/
 
 ## Prerequisites
-- **Python 3.10** installed on your system.
+- **Python 3.11** installed on your system.
 
 ## Setup
 
-1. **Create and activate a virtual environment** (Python 3.10):
+1. **Create and activate a virtual environment** (Python 3.11):
 
    ```bash
-   python3.10 -m venv venv
+   python3.11 -m venv venv
    # macOS/Linux
    source venv/bin/activate
    # Windows (PowerShell)
